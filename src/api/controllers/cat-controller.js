@@ -14,23 +14,34 @@ const getCatById = (req, res) => {
 };
 
 const postCat = (req, res) => {
-  const result = addCat(req.body);
+  console.log('postCat', req.body);
+  console.log('File', req.file);
+
+  const result = addCat(req.body, req.file);
   if (result.cat_id) {
     res.status(201);
-    res.json({ message: "New cat added.", result });
+    res.json({ message: 'New cat added.', result });
   } else {
     res.sendStatus(400);
   }
 };
 
-const putCat = (req, res) => {
-  res.sendStatus(200);
-  res.json({message: 'Cat item updated.', result});
+const putCat = async (req, res) => {
+  const result = await modifyCat(req.body, req.params.id, res.locals.user);
+  if (!result) {
+    res.sendStatus(404);
+    return;
+  }
+  res.json(result);
 };
 
 const deleteCat = (req, res) => {
-  res.sendStatus(200);
-  res.json({message: 'Cat item deleted.', result});
+  const result = removeCat(req.params.id, res.locals.user);
+  if (!result) {
+    res.sendStatus(404);
+    return;
+  }
+  res.json(result);
 };
 
 export { getCat, getCatById, postCat, putCat, deleteCat };
